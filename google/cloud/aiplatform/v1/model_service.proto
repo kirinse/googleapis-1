@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,10 +28,13 @@ import "google/cloud/aiplatform/v1/operation.proto";
 import "google/longrunning/operations.proto";
 import "google/protobuf/field_mask.proto";
 
+option csharp_namespace = "Google.Cloud.AIPlatform.V1";
 option go_package = "google.golang.org/genproto/googleapis/cloud/aiplatform/v1;aiplatform";
 option java_multiple_files = true;
 option java_outer_classname = "ModelServiceProto";
 option java_package = "com.google.cloud.aiplatform.v1";
+option php_namespace = "Google\\Cloud\\AIPlatform\\V1";
+option ruby_package = "Google::Cloud::AIPlatform::V1";
 
 // A service for managing Vertex AI's machine learning Models.
 service ModelService {
@@ -77,8 +80,10 @@ service ModelService {
   }
 
   // Deletes a Model.
-  // Note: Model can only be deleted if there are no DeployedModels created
-  // from it.
+  //
+  // A model cannot be deleted if any [Endpoint][google.cloud.aiplatform.v1.Endpoint] resource has a
+  // [DeployedModel][google.cloud.aiplatform.v1.DeployedModel] based on the model in its
+  // [deployed_models][google.cloud.aiplatform.v1.Endpoint.deployed_models] field.
   rpc DeleteModel(DeleteModelRequest) returns (google.longrunning.Operation) {
     option (google.api.http) = {
       delete: "/v1/{name=projects/*/locations/*/models/*}"
@@ -90,7 +95,7 @@ service ModelService {
     };
   }
 
-  // Exports a trained, exportable, Model to a location specified by the
+  // Exports a trained, exportable Model to a location specified by the
   // user. A Model is considered to be exportable if it has at least one
   // [supported export format][google.cloud.aiplatform.v1.Model.supported_export_formats].
   rpc ExportModel(ExportModelRequest) returns (google.longrunning.Operation) {
@@ -103,6 +108,15 @@ service ModelService {
       response_type: "ExportModelResponse"
       metadata_type: "ExportModelOperationMetadata"
     };
+  }
+
+  // Imports an externally generated ModelEvaluation.
+  rpc ImportModelEvaluation(ImportModelEvaluationRequest) returns (ModelEvaluation) {
+    option (google.api.http) = {
+      post: "/v1/{parent=projects/*/locations/*/models/*}/evaluations:import"
+      body: "*"
+    };
+    option (google.api.method_signature) = "parent,model_evaluation";
   }
 
   // Gets a ModelEvaluation.
@@ -291,7 +305,6 @@ message ExportModelRequest {
   }
 
   // Required. The resource name of the Model to export.
-  // Format: `projects/{project}/locations/{location}/models/{model}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -328,6 +341,21 @@ message ExportModelOperationMetadata {
 // Response message of [ModelService.ExportModel][google.cloud.aiplatform.v1.ModelService.ExportModel] operation.
 message ExportModelResponse {
 
+}
+
+// Request message for [ModelService.ImportModelEvaluation][google.cloud.aiplatform.v1.ModelService.ImportModelEvaluation]
+message ImportModelEvaluationRequest {
+  // Required. The name of the parent model resource.
+  // Format: `projects/{project}/locations/{location}/models/{model}`
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "aiplatform.googleapis.com/Model"
+    }
+  ];
+
+  // Required. Model evaluation resource to be imported.
+  ModelEvaluation model_evaluation = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Request message for [ModelService.GetModelEvaluation][google.cloud.aiplatform.v1.ModelService.GetModelEvaluation].

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import "google/api/client.proto";
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 import "google/cloud/dialogflow/v2beta1/participant.proto";
-import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -185,18 +184,6 @@ message AnswerFeedback {
 
 // Detail feedback of Agent Assistant result.
 message AgentAssistantFeedback {
-  // Feedback for conversation summarization.
-  message SummarizationFeedback {
-    // Timestamp when composing of the summary starts.
-    google.protobuf.Timestamp start_timestamp = 1;
-
-    // Timestamp when the summary was submitted.
-    google.protobuf.Timestamp submit_timestamp = 2;
-
-    // Text of actual submitted summary.
-    string summary_text = 3;
-  }
-
   // Relevance of an answer.
   enum AnswerRelevance {
     // Answer relevance unspecified.
@@ -231,6 +218,18 @@ message AgentAssistantFeedback {
 
     // Document is efficient.
     EFFICIENT = 2;
+  }
+
+  // Feedback for conversation summarization.
+  message SummarizationFeedback {
+    // Timestamp when composing of the summary starts.
+    google.protobuf.Timestamp start_timestamp = 1;
+
+    // Timestamp when the summary was submitted.
+    google.protobuf.Timestamp submit_timestamp = 2;
+
+    // Text of actual submitted summary.
+    string summary_text = 3;
   }
 
   // Optional. Whether or not the suggested answer is relevant.
